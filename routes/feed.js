@@ -1,14 +1,14 @@
-const express = require('express');
-const { body } = require('express-validator');
-const isAuth = require('../middleware/isAuth');
+import express from 'express';
+import { body } from 'express-validator';
+import isAuth from '../middleware/isAuth.js';
 
-const {
+import {
   getPosts,
   createPost,
   getPost,
   updatePost,
   deletePost,
-} = require('../controller/feed');
+} from '../controller/feed.js';
 
 const router = express.Router();
 
@@ -38,4 +38,4 @@ router.put(
 
 router.delete('/post/:postId', isAuth, deletePost);
 
-module.exports = router;
+export default router;

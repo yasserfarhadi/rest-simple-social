@@ -1,12 +1,12 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const path = require('node:path');
-const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import path from 'node:path';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
 
-const feedRouter = require('./routes/feed');
-const authRouter = require('./routes/auth');
+import feedRouter from './routes/feed.js';
+import authRouter from './routes/auth.js';
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -58,11 +58,11 @@ app.use((error, req, res, next) => {
   });
 });
 
-mongoose
-  .connect('mongodb://127.0.0.1:27017/social')
-  .then((result) => {
-    console.log('Connected to mongodb');
-    app.listen(8080);
-    console.log('Server started at port 8080');
-  })
-  .catch(console.log);
+try {
+  await mongoose.connect('mongodb://127.0.0.1:27017/social');
+  console.log('Connected to mongodb');
+  app.listen(8080);
+  console.log('Server started at port 8080');
+} catch (err) {
+  console.log(err);
+}

@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema({
   email: {
@@ -20,4 +20,4 @@ const userSchema = new Schema({
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 });
 
-module.exports = model('User', userSchema);
+export default model('User', userSchema);
