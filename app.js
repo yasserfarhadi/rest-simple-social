@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import path from 'node:path';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+import { Server } from 'socket.io';
+import { init } from './socket.js';
 
 import feedRouter from './routes/feed.js';
 import authRouter from './routes/auth.js';
@@ -61,8 +63,13 @@ app.use((error, req, res, next) => {
 try {
   await mongoose.connect('mongodb://127.0.0.1:27017/social');
   console.log('Connected to mongodb');
-  app.listen(8080);
+  const server = app.listen(8080);
   console.log('Server started at port 8080');
+  const io = init(server);
+
+  io.on('connection', (socket) => {
+    console.log('Client Connected', socket.id);
+  });
 } catch (err) {
   console.log(err);
 }
