@@ -3,7 +3,6 @@ import Post from '../models/post.js';
 import User from '../models/user.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getIO } from '../socket.js';
 
 export const getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -51,21 +50,17 @@ export const createPost = async (req, res, next) => {
       imageUrl,
       creator: req.userId,
     });
-
     await post.save();
     const user = await User.findById(req.userId);
     user.posts.push(post);
     await user.save();
-    getIO().emit('posts', {
-      action: 'create',
-      post: { ...post._doc, creator: { _id: user._id, name: user.name } },
-    });
     await res.status(201).json({
       message: 'Post created successfully!',
       post,
       creator: { _id: user._id, name: user.name },
     });
   } catch (err) {
+    console.log(err);
     if (!err.statusCode) {
       err.statusCode = 500;
     }
@@ -132,10 +127,6 @@ export const updatePost = async (req, res, next) => {
     post.imageUrl = imageUrl;
     post.content = content;
     const result = await post.save();
-    getIO().emit('posts', {
-      action: 'update',
-      post: result,
-    });
     res.status(200).json({ message: 'Post updated', post: result });
   } catch (err) {
     if (!err.statusCode) {
@@ -164,7 +155,6 @@ export const deletePost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     const result = await user.save();
-    getIO().emit('posts', { action: 'delete', post: postId });
     res.status(200).json({ message: 'Post deleted!', post: result });
   } catch (err) {
     if (!err.statusCode) {
